@@ -38,6 +38,9 @@ function findPluginPath(): string | null {
   return null
 }
 
+// Helper: only produces key=value when value is truthy
+const flag = (key: string, value: any) => value ? `${key}=${value}` : ""
+
 export default async function ObsidianToolsPlugin(ctx) {
   // Resolve plugin path before import (variable avoids esbuild static analysis)
   const pluginPath = findPluginPath()
@@ -45,7 +48,9 @@ export default async function ObsidianToolsPlugin(ctx) {
     throw new Error("Cannot find @opencode-ai/plugin. Please ensure OpenCode is installed.")
   }
   const { tool } = await import(path.join(pluginPath, "dist", "index.js"))
-  
+
+  const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
+
   return {
     // Register tools
     tool: {
@@ -54,11 +59,8 @@ export default async function ObsidianToolsPlugin(ctx) {
         args: {
           file: tool.schema.string().describe("Relative path to file"),
         },
-        async execute(args) {
-          const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
-          const result = await Bun.$`"${OBSIDIAN}" read file=${args.file} ${vaultArg}`.text()
-          return result
-        },
+        execute: ({ file }) =>
+          Bun.$`"${OBSIDIAN}" read file=${file} ${vaultArg}`.text(),
       }),
 
       obsidian_write: tool({
@@ -68,16 +70,8 @@ export default async function ObsidianToolsPlugin(ctx) {
           path: tool.schema.string().optional(),
           content: tool.schema.string().optional(),
         },
-        async execute(args) {
-          const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
-          if (args.content) {
-            const result = await Bun.$`"${OBSIDIAN}" create name=${args.name} path=${args.path} content=${args.content} ${vaultArg}`.text()
-            return result
-          } else {
-            const result = await Bun.$`"${OBSIDIAN}" create name=${args.name} path=${args.path} ${vaultArg}`.text()
-            return result
-          }
-        },
+        execute: ({ name, path: p, content }) =>
+          Bun.$`"${OBSIDIAN}" create name=${name} ${flag("path", p)} ${flag("content", content)} ${vaultArg}`.text(),
       }),
 
       obsidian_append: tool({
@@ -86,11 +80,8 @@ export default async function ObsidianToolsPlugin(ctx) {
           file: tool.schema.string(),
           content: tool.schema.string(),
         },
-        async execute(args) {
-          const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
-          const result = await Bun.$`"${OBSIDIAN}" append content=${args.content} file=${args.file} ${vaultArg}`.text()
-          return result
-        },
+        execute: ({ file, content }) =>
+          Bun.$`"${OBSIDIAN}" append content=${content} file=${file} ${vaultArg}`.text(),
       }),
 
       obsidian_search: tool({
@@ -100,22 +91,8 @@ export default async function ObsidianToolsPlugin(ctx) {
           path: tool.schema.string().optional(),
           limit: tool.schema.number().optional(),
         },
-        async execute(args) {
-          const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
-          if (args.path && args.limit) {
-            const result = await Bun.$`"${OBSIDIAN}" search query=${args.query} path=${args.path} limit=${args.limit} format=json ${vaultArg}`.text()
-            return result
-          } else if (args.path) {
-            const result = await Bun.$`"${OBSIDIAN}" search query=${args.query} path=${args.path} format=json ${vaultArg}`.text()
-            return result
-          } else if (args.limit) {
-            const result = await Bun.$`"${OBSIDIAN}" search query=${args.query} limit=${args.limit} format=json ${vaultArg}`.text()
-            return result
-          } else {
-            const result = await Bun.$`"${OBSIDIAN}" search query=${args.query} format=json ${vaultArg}`.text()
-            return result
-          }
-        },
+        execute: ({ query, path: p, limit }) =>
+          Bun.$`"${OBSIDIAN}" search query=${query} ${flag("path", p)} ${flag("limit", limit)} format=json ${vaultArg}`.text(),
       }),
 
       obsidian_list: tool({
@@ -124,16 +101,8 @@ export default async function ObsidianToolsPlugin(ctx) {
           type: tool.schema.enum(["files", "folders", "tags", "recents"]),
           path: tool.schema.string().optional(),
         },
-        async execute(args) {
-          const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
-          if (args.path) {
-            const result = await Bun.$`"${OBSIDIAN}" ${args.type} path=${args.path} ${vaultArg}`.text()
-            return result
-          } else {
-            const result = await Bun.$`"${OBSIDIAN}" ${args.type} ${vaultArg}`.text()
-            return result
-          }
-        },
+        execute: ({ type, path: p }) =>
+          Bun.$`"${OBSIDIAN}" ${type} ${flag("path", p)} ${vaultArg}`.text(),
       }),
 
       obsidian_property: tool({
@@ -145,21 +114,9 @@ export default async function ObsidianToolsPlugin(ctx) {
           value: tool.schema.string().optional(),
           type: tool.schema.enum(["text", "list", "number", "date", "checkbox"]).optional(),
         },
-        async execute(args) {
-          const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
-          if (args.action === "set" && args.value && args.type) {
-            const result = await Bun.$`"${OBSIDIAN}" property:set name=${args.name} value=${args.value} type=${args.type} file=${args.file} ${vaultArg}`.text()
-            return result
-          } else if (args.action === "set" && args.value) {
-            const result = await Bun.$`"${OBSIDIAN}" property:set name=${args.name} value=${args.value} file=${args.file} ${vaultArg}`.text()
-            return result
-          } else if (args.action === "remove") {
-            const result = await Bun.$`"${OBSIDIAN}" property:remove name=${args.name} file=${args.file} ${vaultArg}`.text()
-            return result
-          } else {
-            const result = await Bun.$`"${OBSIDIAN}" property:read name=${args.name} file=${args.file} ${vaultArg}`.text()
-            return result
-          }
+        execute: ({ action, name, file, value, type }) => {
+          const cmd = `property:${action}`
+          return Bun.$`"${OBSIDIAN}" ${cmd} name=${name} ${flag("value", value)} ${flag("type", type)} file=${file} ${vaultArg}`.text()
         },
       }),
 
@@ -169,16 +126,8 @@ export default async function ObsidianToolsPlugin(ctx) {
           type: tool.schema.enum(["backlinks", "links", "unresolved", "orphans", "deadends"]),
           file: tool.schema.string().optional(),
         },
-        async execute(args) {
-          const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
-          if (args.file) {
-            const result = await Bun.$`"${OBSIDIAN}" ${args.type} file=${args.file} ${vaultArg}`.text()
-            return result
-          } else {
-            const result = await Bun.$`"${OBSIDIAN}" ${args.type} ${vaultArg}`.text()
-            return result
-          }
-        },
+        execute: ({ type, file }) =>
+          Bun.$`"${OBSIDIAN}" ${type} ${flag("file", file)} ${vaultArg}`.text(),
       }),
     },
 
