@@ -1,4 +1,4 @@
-# OpenCode Obsidian Tools
+# opencode-obsidian
 
 An OpenCode plugin that provides integration with Obsidian vault via the Obsidian CLI.
 
@@ -21,7 +21,7 @@ Add to your `opencode.json`:
 ```json
 {
   "plugin": [
-    "opencode-obsidian-tools@git+https://github.com/crack-time/opencode-obsidian-tools.git"
+    "opencode-obsidian@git+https://github.com/crack-time/opencode-obsidian.git"
   ]
 }
 ```

@@ -1,5 +1,5 @@
 {
-  "name": "opencode-obsidian-tools",
+  "name": "opencode-obsidian",
   "version": "1.0.1",
   "description": "OpenCode plugin for Obsidian vault integration via CLI",
   "type": "module",
@@ -15,10 +15,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crack-time/opencode-obsidian-tools.git"
+    "url": "git+https://github.com/crack-time/opencode-obsidian.git"
   },
   "bugs": {
-    "url": "https://github.com/crack-time/opencode-obsidian-tools/issues"
+    "url": "https://github.com/crack-time/opencode-obsidian/issues"
   },
-  "homepage": "https://github.com/crack-time/opencode-obsidian-tools#readme"
+  "homepage": "https://github.com/crack-time/opencode-obsidian#readme"
 }
