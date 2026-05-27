@@ -1,8 +1,8 @@
 /**
  * Obsidian Tools Plugin for OpenCode
- * 
+ *
  * Provides integration with Obsidian vault via Obsidian CLI.
- * 
+ *
  * Configuration:
  * - Set OBSIDIAN_VAULT_PATH environment variable for vault path
  * - Set OBSIDIAN_CLI_PATH environment variable for Obsidian CLI executable
@@ -31,7 +31,9 @@ function findPluginPath(): string {
 // Helper: only produces key=value when value is truthy
 const flag = (key: string, value: any) => value ? `${key}=${value}` : ""
 
-export default async function ObsidianToolsPlugin(ctx) {
+export const ObsidianToolsPlugin = async (ctx) => {
+  const { $ } = ctx
+
   // Resolve plugin path before import (variable avoids esbuild static analysis)
   const pluginPath = findPluginPath()
   const { tool } = await import(path.join(pluginPath, "dist", "index.js"))
@@ -47,7 +49,7 @@ export default async function ObsidianToolsPlugin(ctx) {
           file: tool.schema.string().describe("Relative path to file"),
         },
         execute: ({ file }) =>
-          Bun.$`"${OBSIDIAN}" read file=${file} ${vaultArg}`.text(),
+          $`${OBSIDIAN} read file=${file} ${vaultArg}`.text(),
       }),
 
       obsidian_write: tool({
@@ -58,7 +60,7 @@ export default async function ObsidianToolsPlugin(ctx) {
           content: tool.schema.string().optional(),
         },
         execute: ({ name, path: p, content }) =>
-          Bun.$`"${OBSIDIAN}" create name=${name} ${flag("path", p)} ${flag("content", content)} ${vaultArg}`.text(),
+          $`${OBSIDIAN} create name=${name} ${flag("path", p)} ${flag("content", content)} ${vaultArg}`.text(),
       }),
 
       obsidian_append: tool({
@@ -68,7 +70,7 @@ export default async function ObsidianToolsPlugin(ctx) {
           content: tool.schema.string(),
         },
         execute: ({ file, content }) =>
-          Bun.$`"${OBSIDIAN}" append content=${content} file=${file} ${vaultArg}`.text(),
+          $`${OBSIDIAN} append content=${content} file=${file} ${vaultArg}`.text(),
       }),
 
       obsidian_search: tool({
@@ -79,7 +81,7 @@ export default async function ObsidianToolsPlugin(ctx) {
           limit: tool.schema.number().optional(),
         },
         execute: ({ query, path: p, limit }) =>
-          Bun.$`"${OBSIDIAN}" search query=${query} ${flag("path", p)} ${flag("limit", limit)} format=json ${vaultArg}`.text(),
+          $`${OBSIDIAN} search query=${query} ${flag("path", p)} ${flag("limit", limit)} format=json ${vaultArg}`.text(),
       }),
 
       obsidian_list: tool({
@@ -89,7 +91,7 @@ export default async function ObsidianToolsPlugin(ctx) {
           path: tool.schema.string().optional(),
         },
         execute: ({ type, path: p }) =>
-          Bun.$`"${OBSIDIAN}" ${type} ${flag("path", p)} ${vaultArg}`.text(),
+          $`${OBSIDIAN} ${type} ${flag("path", p)} ${vaultArg}`.text(),
       }),
 
       obsidian_property: tool({
@@ -103,7 +105,7 @@ export default async function ObsidianToolsPlugin(ctx) {
         },
         execute: ({ action, name, file, value, type }) => {
           const cmd = `property:${action}`
-          return Bun.$`"${OBSIDIAN}" ${cmd} name=${name} ${flag("value", value)} ${flag("type", type)} file=${file} ${vaultArg}`.text()
+          return $`${OBSIDIAN} ${cmd} name=${name} ${flag("value", value)} ${flag("type", type)} file=${file} ${vaultArg}`.text()
         },
       }),
 
@@ -114,7 +116,7 @@ export default async function ObsidianToolsPlugin(ctx) {
           file: tool.schema.string().optional(),
         },
         execute: ({ type, file }) =>
-          Bun.$`"${OBSIDIAN}" ${type} ${flag("file", file)} ${vaultArg}`.text(),
+          $`${OBSIDIAN} ${type} ${flag("file", file)} ${vaultArg}`.text(),
       }),
     },
 
