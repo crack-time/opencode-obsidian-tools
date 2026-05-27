@@ -9,7 +9,6 @@
  */
 
 import path from "path"
-import fs from "fs"
 import os from "os"
 import { fileURLToPath } from "url"
 
@@ -24,18 +23,9 @@ const VAULT = process.env.OBSIDIAN_VAULT_PATH || ""
  * Returns the absolute path to the module directory (containing package.json).
  * Uses variable-based import so esbuild won't statically resolve it.
  */
-function findPluginPath(): string | null {
+function findPluginPath(): string {
   const homeDir = os.homedir()
-  const possibleDirs = [
-    path.join(homeDir, ".config", "opencode", "node_modules", "@opencode-ai", "plugin"),
-    path.join(homeDir, ".cache", "opencode", "node_modules", "@opencode-ai", "plugin"),
-  ]
-  for (const dir of possibleDirs) {
-    if (fs.existsSync(path.join(dir, "package.json"))) {
-      return dir
-    }
-  }
-  return null
+  return path.join(homeDir, ".config", "opencode", "node_modules", "@opencode-ai", "plugin")
 }
 
 // Helper: only produces key=value when value is truthy
@@ -44,9 +34,6 @@ const flag = (key: string, value: any) => value ? `${key}=${value}` : ""
 export default async function ObsidianToolsPlugin(ctx) {
   // Resolve plugin path before import (variable avoids esbuild static analysis)
   const pluginPath = findPluginPath()
-  if (!pluginPath) {
-    throw new Error("Cannot find @opencode-ai/plugin. Please ensure OpenCode is installed.")
-  }
   const { tool } = await import(path.join(pluginPath, "dist", "index.js"))
 
   const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
