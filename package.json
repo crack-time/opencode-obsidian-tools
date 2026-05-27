@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "OpenCode plugin for Obsidian vault integration via CLI",
   "type": "module",
-  "main": "obsidian-tools.ts",
+  "main": "opencode-obsidian.ts",
   "keywords": [
     "opencode",
     "obsidian",
