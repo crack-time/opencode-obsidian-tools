@@ -33,6 +33,8 @@ obsidian_search query=<keyword>
 # → array of matching file paths
 ```
 
+**When searching LaTeX math expressions**, copy the exact character sequence as it appears in the source Markdown — including all `^`, `_`, `{`, `}`, `\`, and `*` symbols. Obsidian's full-text index stores these as literal text. Use the smallest unique substring (e.g. `D^0_{ij}`) rather than a full equation. If uncertain about the exact spelling, `read` the file first and copy the fragment directly into the query.
+
 ### Step 3 — Read Only What Matters
 
 Now, and only now, use `obsidian_read` on the files found in Steps 1–2.
