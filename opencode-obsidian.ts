@@ -11,6 +11,11 @@
 import path from "path"
 import os from "os"
 import { fileURLToPath } from "url"
+import {
+  formatTree,
+  formatSearchResults,
+  formatRelatedGraph,
+} from "./formatUtils.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -50,8 +55,11 @@ export const ObsidianToolsPlugin = async (ctx) => {
           path: tool.schema.string().optional(),
           limit: tool.schema.number().optional(),
         },
-        execute: ({ query, path: p, limit }) =>
-          $`${OBSIDIAN} search query=${query} ${flag("path", p)} ${flag("limit", limit)} format=json ${vaultArg}`.text(),
+        execute: async ({ query, path: p, limit }) => {
+          const raw = await $`${OBSIDIAN} search query=${query} ${flag("path", p)} ${flag("limit", limit)} format=json ${vaultArg}`.text()
+          const paths = JSON.parse(raw) as string[]
+          return await formatSearchResults(paths, query, VAULT)
+        },
       }),
 
       obsidian_list: tool({
@@ -60,8 +68,13 @@ export const ObsidianToolsPlugin = async (ctx) => {
           type: tool.schema.enum(["files", "folders", "tags", "recents"]),
           path: tool.schema.string().optional(),
         },
-        execute: ({ type, path: p }) =>
-          $`${OBSIDIAN} ${type} ${flag("path", p)} ${vaultArg}`.text(),
+        execute: async ({ type, path: p }) => {
+          const raw = await $`${OBSIDIAN} ${type} ${flag("path", p)} ${vaultArg}`.text()
+          if (type === "folders") {
+            return formatTree(raw)
+          }
+          return raw
+        },
       }),
 
       obsidian_property: tool({
@@ -82,11 +95,22 @@ export const ObsidianToolsPlugin = async (ctx) => {
       obsidian_graph: tool({
         description: "Get graph information",
         args: {
-          type: tool.schema.enum(["backlinks", "links", "unresolved", "orphans", "deadends"]),
+          type: tool.schema.enum(["backlinks", "links", "unresolved", "orphans", "deadends", "related"]),
           file: tool.schema.string().optional(),
         },
-        execute: ({ type, file }) =>
-          $`${OBSIDIAN} ${type} ${flag("file", file)} ${vaultArg}`.text(),
+        execute: async ({ type, file }) => {
+          if (type === "related") {
+            if (!file) {
+              return 'Error: "file" is required when type="related"'
+            }
+            const [backlinksRaw, linksRaw] = await Promise.all([
+              $`${OBSIDIAN} backlinks ${flag("file", file)} ${vaultArg}`.text(),
+              $`${OBSIDIAN} links ${flag("file", file)} ${vaultArg}`.text(),
+            ])
+            return formatRelatedGraph(backlinksRaw, linksRaw)
+          }
+          return $`${OBSIDIAN} ${type} ${flag("file", file)} ${vaultArg}`.text()
+        },
       }),
     },
 
