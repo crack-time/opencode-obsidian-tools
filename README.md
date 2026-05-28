@@ -11,15 +11,15 @@ An OpenCode plugin that provides integration with Obsidian vault via the Obsidia
 
 ## Installation
 
-### Install from GitHub
+```bash
+opencode plugin opencode-obsidian
+```
 
-Add to your `opencode.json`:
+Or add to your `opencode.json`:
 
 ```json
 {
-  "plugin": [
-    "opencode-obsidian@git+https://github.com/crack-time/opencode-obsidian.git"
-  ]
+  "plugin": ["opencode-obsidian"]
 }
 ```
 
