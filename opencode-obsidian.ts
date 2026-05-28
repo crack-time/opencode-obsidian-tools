@@ -8,7 +8,7 @@
  * - Set OBSIDIAN_CLI_PATH environment variable for Obsidian CLI executable
  */
 
-import { tool } from "@opencode-ai/plugin"
+import { type Plugin, tool } from "@opencode-ai/plugin"
 import path from "path"
 import { fileURLToPath } from "url"
 import {
@@ -26,7 +26,7 @@ const VAULT = process.env.OBSIDIAN_VAULT_PATH || ""
 // Helper: only produces key=value when value is truthy
 const flag = (key: string, value: any) => value ? `${key}=${value}` : ""
 
-export const ObsidianToolsPlugin = (ctx) => {
+export const ObsidianToolsPlugin: Plugin = async (ctx) => {
   const { $ } = ctx
 
   const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
