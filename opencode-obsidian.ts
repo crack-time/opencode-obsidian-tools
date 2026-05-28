@@ -9,13 +9,13 @@
  */
 
 import path from "path"
-import os from "os"
 import { fileURLToPath } from "url"
 import {
   formatTree,
   formatSearchResults,
   formatRelatedGraph,
 } from "./formatUtils.js"
+import { tool as t } from "@opencode-ai/plugin"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -23,37 +23,23 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OBSIDIAN = process.env.OBSIDIAN_CLI_PATH || "obsidian"
 const VAULT = process.env.OBSIDIAN_VAULT_PATH || ""
 
-/**
- * Find @opencode-ai/plugin module by checking known OpenCode installation paths.
- * Returns the absolute path to the module directory (containing package.json).
- * Uses variable-based import so esbuild won't statically resolve it.
- */
-function findPluginPath(): string {
-  const homeDir = os.homedir()
-  return path.join(homeDir, ".config", "opencode", "node_modules", "@opencode-ai", "plugin")
-}
-
 // Helper: only produces key=value when value is truthy
 const flag = (key: string, value: any) => value ? `${key}=${value}` : ""
 
 export const ObsidianToolsPlugin = async (ctx) => {
   const { $ } = ctx
 
-  // Resolve plugin path before import (variable avoids esbuild static analysis)
-  const pluginPath = findPluginPath()
-  const { tool } = await import(path.join(pluginPath, "dist", "index.js"))
-
   const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
 
   return {
     // Register tools
     tool: {
-      obsidian_search: tool({
+      obsidian_search: t({
         description: "Search the vault",
         args: {
-          query: tool.schema.string(),
-          path: tool.schema.string().optional(),
-          limit: tool.schema.number().optional(),
+          query: t.schema.string(),
+          path: t.schema.string().optional(),
+          limit: t.schema.number().optional(),
         },
         execute: async ({ query, path: p, limit }) => {
           const raw = await $`${OBSIDIAN} search query=${query} ${flag("path", p)} ${flag("limit", limit)} format=json ${vaultArg}`.text()
@@ -62,11 +48,11 @@ export const ObsidianToolsPlugin = async (ctx) => {
         },
       }),
 
-      obsidian_list: tool({
+      obsidian_list: t({
         description: "List files, folders, tags, or recents",
         args: {
-          type: tool.schema.enum(["files", "folders", "tags", "recents"]),
-          path: tool.schema.string().optional(),
+          type: t.schema.enum(["files", "folders", "tags", "recents"]),
+          path: t.schema.string().optional(),
         },
         execute: async ({ type, path: p }) => {
           const raw = await $`${OBSIDIAN} ${type} ${flag("path", p)} ${vaultArg}`.text()
@@ -77,14 +63,14 @@ export const ObsidianToolsPlugin = async (ctx) => {
         },
       }),
 
-      obsidian_property: tool({
+      obsidian_property: t({
         description: "Manage frontmatter properties",
         args: {
-          action: tool.schema.enum(["read", "set", "remove"]),
-          name: tool.schema.string(),
-          file: tool.schema.string(),
-          value: tool.schema.string().optional(),
-          type: tool.schema.enum(["text", "list", "number", "date", "checkbox"]).optional(),
+          action: t.schema.enum(["read", "set", "remove"]),
+          name: t.schema.string(),
+          file: t.schema.string(),
+          value: t.schema.string().optional(),
+          type: t.schema.enum(["text", "list", "number", "date", "checkbox"]).optional(),
         },
         execute: ({ action, name, file, value, type }) => {
           const cmd = `property:${action}`
@@ -92,11 +78,11 @@ export const ObsidianToolsPlugin = async (ctx) => {
         },
       }),
 
-      obsidian_graph: tool({
+      obsidian_graph: t({
         description: "Get graph information",
         args: {
-          type: tool.schema.enum(["backlinks", "links", "unresolved", "orphans", "deadends", "related"]),
-          file: tool.schema.string().optional(),
+          type: t.schema.enum(["backlinks", "links", "unresolved", "orphans", "deadends", "related"]),
+          file: t.schema.string().optional(),
         },
         execute: async ({ type, file }) => {
           if (type === "related") {
