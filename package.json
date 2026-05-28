@@ -1,6 +1,6 @@
 {
   "name": "opencode-obsidian",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "OpenCode plugin for Obsidian vault integration via CLI",
   "type": "module",
   "main": "dist/index.js",
@@ -8,7 +8,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "esbuild opencode-obsidian.ts --bundle --platform=node --format=esm --outfile=dist/index.js && rm -rf dist/skills && cp -r skills dist/skills",
+    "build": "esbuild opencode-obsidian.ts --bundle --platform=node --format=esm --external:@opencode-ai/plugin --outfile=dist/index.js && rm -rf dist/skills && cp -r skills dist/skills",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -22,6 +22,9 @@
   "license": "MIT",
   "devDependencies": {
     "esbuild": "^0.25.0"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": ">=1.0.0"
   },
   "repository": {
     "type": "git",

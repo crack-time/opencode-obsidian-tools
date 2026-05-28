@@ -8,8 +8,8 @@
  * - Set OBSIDIAN_CLI_PATH environment variable for Obsidian CLI executable
  */
 
+import { tool } from "@opencode-ai/plugin"
 import path from "path"
-import os from "os"
 import { fileURLToPath } from "url"
 import {
   formatTree,
@@ -23,25 +23,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OBSIDIAN = process.env.OBSIDIAN_CLI_PATH || "obsidian"
 const VAULT = process.env.OBSIDIAN_VAULT_PATH || ""
 
-/**
- * Find @opencode-ai/plugin module by checking known OpenCode installation paths.
- * Returns the absolute path to the module directory (containing package.json).
- * Uses variable-based import so esbuild won't statically resolve it.
- */
-function findPluginPath(): string {
-  const homeDir = os.homedir()
-  return path.join(homeDir, ".config", "opencode", "node_modules", "@opencode-ai", "plugin")
-}
-
 // Helper: only produces key=value when value is truthy
 const flag = (key: string, value: any) => value ? `${key}=${value}` : ""
 
-export const ObsidianToolsPlugin = async (ctx) => {
+export const ObsidianToolsPlugin = (ctx) => {
   const { $ } = ctx
-
-  // Resolve plugin path before import (variable avoids esbuild static analysis)
-  const pluginPath = findPluginPath()
-  const { tool } = await import(path.join(pluginPath, "dist", "index.js"))
 
   const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
 
