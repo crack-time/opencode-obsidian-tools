@@ -1,6 +1,6 @@
 {
   "name": "opencode-obsidian",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "OpenCode plugin for Obsidian vault integration via CLI",
   "type": "module",
   "main": "dist/index.js",
