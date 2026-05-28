@@ -4,6 +4,7 @@
   "description": "OpenCode plugin for Obsidian vault integration via CLI",
   "type": "module",
   "main": "dist/index.js",
+  "exports": "./dist/index.js",
   "files": [
     "dist/"
   ],
