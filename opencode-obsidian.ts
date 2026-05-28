@@ -15,7 +15,7 @@ import {
   formatSearchResults,
   formatRelatedGraph,
 } from "./formatUtils.js"
-import { tool as t } from "@opencode-ai/plugin"
+import { type Plugin, tool as t } from "@opencode-ai/plugin"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -26,7 +26,7 @@ const VAULT = process.env.OBSIDIAN_VAULT_PATH || ""
 // Helper: only produces key=value when value is truthy
 const flag = (key: string, value: any) => value ? `${key}=${value}` : ""
 
-export const ObsidianToolsPlugin = async (ctx) => {
+export const ObsidianToolsPlugin: Plugin = async (ctx) => {
   const { $ } = ctx
 
   const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
