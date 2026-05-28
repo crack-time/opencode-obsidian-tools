@@ -26,10 +26,10 @@ const VAULT = process.env.OBSIDIAN_VAULT_PATH || ""
 // Helper: only produces key=value when value is truthy
 const flag = (key: string, value: any) => value ? `${key}=${value}` : ""
 
-export const ObsidianToolsPlugin: Plugin = async (ctx) => {
+export const ObsidianPlugin: Plugin = async (ctx) => {
   const { $ } = ctx
-
   const vaultArg = VAULT ? `--vault "${VAULT}"` : ""
+  const ObsidianSkillsDir = path.join(__dirname, "skills")
 
   return {
     // Register tools
@@ -102,11 +102,10 @@ export const ObsidianToolsPlugin: Plugin = async (ctx) => {
 
     // Register skills path
     config: async (config) => {
-      const skillsDir = path.join(__dirname, "skills")
       config.skills = config.skills || {}
       config.skills.paths = config.skills.paths || []
-      if (!config.skills.paths.includes(skillsDir)) {
-        config.skills.paths.push(skillsDir)
+      if (!config.skills.paths.includes(ObsidianSkillsDir)) {
+        config.skills.paths.push(ObsidianSkillsDir)
       }
     },
   }
