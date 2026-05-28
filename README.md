@@ -4,9 +4,6 @@ An OpenCode plugin that provides integration with Obsidian vault via the Obsidia
 
 ## Features
 
-- **Read files** from your Obsidian vault
-- **Create/Write** new notes
-- **Append** content to existing notes
 - **Search** vault contents with full-text search
 - **List** files, folders, tags, and recent files
 - **Manage** frontmatter properties
@@ -61,9 +58,6 @@ After installation, the following tools will be available to OpenCode:
 
 | Tool | Description |
 |------|-------------|
-| `obsidian_read` | Read a file from the vault |
-| `obsidian_write` | Create a new file |
-| `obsidian_append` | Append content to an existing file |
 | `obsidian_search` | Full-text search the vault |
 | `obsidian_list` | List files, folders, tags, or recents |
 | `obsidian_property` | Read/set/remove frontmatter properties |
@@ -74,8 +68,6 @@ After installation, the following tools will be available to OpenCode:
 Once configured, you can use natural language to interact with your vault:
 
 > "Search for notes about machine learning"
-> "Create a new note called 'Ideas' in my inbox"
-> "Read the project overview file"
 > "List all tags in my vault"
 
 ## Prerequisites

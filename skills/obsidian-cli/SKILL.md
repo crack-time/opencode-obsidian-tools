@@ -1,6 +1,6 @@
 ---
 name: obsidian-cli
-description: Guidelines for using Obsidian vault tools. Use when: (1) Need to search vault contents by full-text query, (2) Need to create, read, append, or delete vault files, (3) Need to operate on frontmatter properties, (4) Need to inspect backlinks, orphans, or file lists.
+description: Guidelines for using Obsidian vault tools. Use when: (1) Need to search vault contents by full-text query, (2) Need to operate on frontmatter properties, (3) Need to inspect backlinks, orphans, or file lists.
 ---
 
 # Obsidian Vault Usage
@@ -37,7 +37,7 @@ obsidian_search query=<keyword>
 
 ### Step 3 — Read Only What Matters
 
-Now, and only now, use `obsidian_read` on the files found in Steps 1–2.
+Now, and only now, use `read` on the files found in Steps 1–2.
 
 ---
 
@@ -48,7 +48,7 @@ Now, and only now, use `obsidian_read` on the files found in Steps 1–2.
 | `obsidian_graph type=links` | Forward links — "what does this point to?" | Step 1: structure |
 | `obsidian_graph type=backlinks` | Reverse links — "who points to this?" | Step 3: context |
 | `obsidian_search` | Full-text search across vault | Step 2: locate |
-| `obsidian_read` | Read file content | Step 3: after locating |
+| `read` | Read file content (standard file tool) | Step 3: after locating |
 | `obsidian_list` | List files/folders/tags | Optional: browse |
 
 ## Notes

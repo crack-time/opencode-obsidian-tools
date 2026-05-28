@@ -43,36 +43,6 @@ export const ObsidianToolsPlugin = async (ctx) => {
   return {
     // Register tools
     tool: {
-      obsidian_read: tool({
-        description: "Read a file from the Obsidian vault",
-        args: {
-          file: tool.schema.string().describe("Relative path to file"),
-        },
-        execute: ({ file }) =>
-          $`${OBSIDIAN} read file=${file} ${vaultArg}`.text(),
-      }),
-
-      obsidian_write: tool({
-        description: "Create a file in the Obsidian vault",
-        args: {
-          name: tool.schema.string(),
-          path: tool.schema.string().optional(),
-          content: tool.schema.string().optional(),
-        },
-        execute: ({ name, path: p, content }) =>
-          $`${OBSIDIAN} create name=${name} ${flag("path", p)} ${flag("content", content)} ${vaultArg}`.text(),
-      }),
-
-      obsidian_append: tool({
-        description: "Append content to a file",
-        args: {
-          file: tool.schema.string(),
-          content: tool.schema.string(),
-        },
-        execute: ({ file, content }) =>
-          $`${OBSIDIAN} append content=${content} file=${file} ${vaultArg}`.text(),
-      }),
-
       obsidian_search: tool({
         description: "Search the vault",
         args: {
