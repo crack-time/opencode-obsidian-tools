@@ -1,5 +1,5 @@
 # Dependencies
-# node_modules/ committed for git-cache compatibility
+node_modules/
 
 # Logs
 *.log

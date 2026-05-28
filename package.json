@@ -20,8 +20,5 @@
   "bugs": {
     "url": "https://github.com/crack-time/opencode-obsidian/issues"
   },
-  "homepage": "https://github.com/crack-time/opencode-obsidian#readme",
-  "dependencies": {
-    "@opencode-ai/plugin": "^1.15.11"
-  }
+  "homepage": "https://github.com/crack-time/opencode-obsidian#readme"
 }
