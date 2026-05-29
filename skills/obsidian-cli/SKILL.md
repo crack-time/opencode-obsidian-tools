@@ -9,17 +9,16 @@ description: Guidelines for using Obsidian vault tools. Use when: (1) Need to se
 
 When any task involves the vault, follow this order:
 
-### Step 1 — Understand the Landscape (Graph-First)
+### Step 1 — Understand the Landscape (Folder-First)
 
-Use `obsidian_graph type=links` recursively from a root entry to map the vault structure **before** touching any content.
+Use `obsidian_folders` to map the vault directory structure **before** touching any content.
 
 ```
-obsidian_graph type=links file=<root>
-# → get children
+obsidian_folders
+# → full folder tree
 
-obsidian_graph type=links file=<child-1>
-obsidian_graph type=links file=<child-2>
-# → continue until no more links
+obsidian_folders folder=<parent>
+# → subfolders of a specific directory
 ```
 
 This reveals the full knowledge tree: projects, areas, resources, and how they interconnect. **Do not** read files at this stage.
@@ -45,12 +44,11 @@ Now, and only now, use `read` on the files found in Steps 1–2.
 
 | Tool | Purpose | When |
 |------|--------|------|
-| `obsidian_graph type=links` | Forward links — "what does this point to?" | Step 1: structure |
-| `obsidian_graph type=backlinks` | Reverse links — "who points to this?" | Step 3: context |
+| `obsidian_graph type=related` | Graph context — backlinks + links | Step 3: context |
 | `obsidian_search` | Full-text search across vault | Step 2: locate |
 | `read` | Read file content (standard file tool) | Step 3: after locating |
 | `obsidian_files` | List files in the vault | Optional: browse files |
-| `obsidian_folders` | List folders in the vault | Optional: browse folders |
+| `obsidian_folders` | List folders in the vault | Step 1: structure |
 | `obsidian_tags` | List tags in the vault | Optional: browse tags |
 | `obsidian_recents` | List recently opened files | Optional: browse recent files |
 
