@@ -49,7 +49,10 @@ Now, and only now, use `read` on the files found in Steps 1–2.
 | `obsidian_graph type=backlinks` | Reverse links — "who points to this?" | Step 3: context |
 | `obsidian_search` | Full-text search across vault | Step 2: locate |
 | `read` | Read file content (standard file tool) | Step 3: after locating |
-| `obsidian_list` | List files/folders/tags | Optional: browse |
+| `obsidian_files` | List files in the vault | Optional: browse files |
+| `obsidian_folders` | List folders in the vault | Optional: browse folders |
+| `obsidian_tags` | List tags in the vault | Optional: browse tags |
+| `obsidian_recents` | List recently opened files | Optional: browse recent files |
 
 ## Notes
 

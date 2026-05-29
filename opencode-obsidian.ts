@@ -48,18 +48,53 @@ export const ObsidianPlugin: Plugin = async (ctx) => {
         },
       }),
 
-      obsidian_list: tool({
-        description: "List files, folders, tags, or recents",
+      obsidian_files: tool({
+        description: "List files in the vault",
         args: {
-          type: tool.schema.enum(["files", "folders", "tags", "recents"]),
-          path: tool.schema.string().optional(),
+          folder: tool.schema.string().optional(),
+          ext: tool.schema.string().optional(),
+          total: tool.schema.boolean().optional(),
         },
-        execute: async ({ type, path: p }) => {
-          const raw = await $`${OBSIDIAN} ${type} ${flag("path", p)} ${vaultArg}`.text()
-          if (type === "folders") {
-            return formatTree(raw)
-          }
-          return raw
+        execute: async ({ folder, ext, total }) => {
+          return $`${OBSIDIAN} files ${flag("folder", folder)} ${flag("ext", ext)} ${total ? "total" : ""} ${vaultArg}`.text()
+        },
+      }),
+
+      obsidian_folders: tool({
+        description: "List folders in the vault",
+        args: {
+          folder: tool.schema.string().optional(),
+          total: tool.schema.boolean().optional(),
+        },
+        execute: async ({ folder, total }) => {
+          const raw = await $`${OBSIDIAN} folders ${flag("folder", folder)} ${total ? "total" : ""} ${vaultArg}`.text()
+          return formatTree(raw)
+        },
+      }),
+
+      obsidian_tags: tool({
+        description: "List tags in the vault",
+        args: {
+          file: tool.schema.string().optional(),
+          path: tool.schema.string().optional(),
+          total: tool.schema.boolean().optional(),
+          counts: tool.schema.boolean().optional(),
+          sort: tool.schema.enum(["name", "count"]).optional(),
+          format: tool.schema.enum(["json", "tsv", "csv"]).optional(),
+          active: tool.schema.boolean().optional(),
+        },
+        execute: async ({ file, path: p, total, counts, sort, format, active }) => {
+          return $`${OBSIDIAN} tags ${flag("file", file)} ${flag("path", p)} ${total ? "total" : ""} ${counts ? "counts" : ""} ${flag("sort", sort)} ${flag("format", format)} ${active ? "active" : ""} ${vaultArg}`.text()
+        },
+      }),
+
+      obsidian_recents: tool({
+        description: "List recently opened files",
+        args: {
+          total: tool.schema.boolean().optional(),
+        },
+        execute: async ({ total }) => {
+          return $`${OBSIDIAN} recents ${total ? "total" : ""} ${vaultArg}`.text()
         },
       }),
 
